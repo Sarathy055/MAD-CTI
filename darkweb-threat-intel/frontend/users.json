@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "sarathy",
+    "email": "sarathyv056@gmail.com",
+    "passwordHash": "$2a$08$yU/Ry1PuTnIQVQGsMKRX5OousxJNhWJxFh0F0pwnlmT9oUj66SLgu",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "name": "sarathy1",
+    "email": "23sc037@drngpit.ac.in",
+    "passwordHash": "$2a$08$V2hm91hhmtcPs9i2OuiuquE9or..f1flrCM4LuhBw0qpijVeNsxf2",
+    "role": "admin"
+  }
+]

@@ -103,7 +103,7 @@ function createUser(name, email, passwordHash) {
 }
 
 function createToken(user) {
-  return jwt.sign({ id: user.id, email: user.email, name: user.name }, AUTH_SECRET, { expiresIn: '2h' });
+  return jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role }, AUTH_SECRET, { expiresIn: '2h' });
 }
 
 function authMiddleware(req, res, next) {
@@ -122,17 +122,7 @@ function authMiddleware(req, res, next) {
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.post('/api/auth/register', async (req, res) => {
-  const { name, email, password } = req.body || {};
-  if (!email || !password) {
-    console.warn('Register: missing email/password', { path: req.path, body: req.body });
-    return res.status(400).json({ error: 'email and password required' });
-  }
-  const existing = findUserByEmail(email);
-  if (existing) return res.status(409).json({ error: 'user already exists' });
-  const hash = await bcrypt.hash(password, 8);
-  const user = createUser(name, email, hash);
-  const token = createToken(user);
-  res.json({ user: { id: user.id, name: user.name, email: user.email }, token });
+  return res.status(403).json({ error: 'Registration is disabled. Only administrators can access this system.' });
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -143,10 +133,11 @@ app.post('/api/auth/login', async (req, res) => {
   }
   const user = findUserByEmail(email);
   if (!user) return res.status(401).json({ error: 'invalid credentials' });
+  if (user.role !== 'admin') return res.status(403).json({ error: 'Access denied. Administrator privileges required.' });
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) return res.status(401).json({ error: 'invalid credentials' });
   const token = createToken(user);
-  res.json({ user: { id: user.id, name: user.name, email: user.email }, token });
+  res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
 });
 
 app.get('/api/auth/me', authMiddleware, (req, res) => {
